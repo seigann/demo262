@@ -1,0 +1,28 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "rules": {
+    /** expects that the shorthand will be used whenever possible */
+    "object-shorthand": [
+      "error",
+      "always"
+    ],
+    /** enforces no braces where they can be omitted */
+    "arrow-body-style": [
+      "error",
+      "as-needed",
+      {
+        "requireReturnForObjectLiteral": true
+      }
+    ],
+    "prefer-arrow-callback": "error",
+    "no-else-return": "error"
+  }
+}
