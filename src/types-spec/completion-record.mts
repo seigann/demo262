@@ -6,7 +6,7 @@
 
 import { Assert } from '../notational-conventions.mjs';
 import { Q } from '../notational-conventions/runtime-semantics.mjs';
-import type { Value } from '../types-language/value.mjs';
+import type { ECMALanguageValues } from '../types-language/type';
 
 /** https://tc39.es/ecma262/#sec-completion-record-specification-type */
 export enum CompletionType {
@@ -45,11 +45,11 @@ export function NormalCompletion<T>(value: T): NormalCompletionRecord<T> {
 }
 
 /** https://tc39.es/ecma262/#sec-throwcompletion */
-export interface ThrowCompletionRecord<T extends Value = any> extends CompletionRecord<T> {
+export interface ThrowCompletionRecord<T extends ECMALanguageValues = any> extends CompletionRecord<T> {
   readonly Type: CompletionType.THROW;
   readonly Target: undefined;
 }
-export function ThrowCompletion<T extends Value>(argument: T): ThrowCompletionRecord<T> {
+export function ThrowCompletion<T extends ECMALanguageValues>(argument: T): ThrowCompletionRecord<T> {
   // 1. Return Completion { [[Type]]: throw, [[Value]]: argument, [[Target]]: empty }.
   return new CompletionRecord<T>({
     Type: CompletionType.THROW,
