@@ -5,6 +5,8 @@
  */
 
 import { Assert } from '../notational-conventions.mjs';
+import { Q } from '../notational-conventions/runtime-semantics.mjs';
+import type { Value } from '../types-language/value.mjs';
 
 /** https://tc39.es/ecma262/#sec-completion-record-specification-type */
 export enum CompletionType {
@@ -14,6 +16,7 @@ export enum CompletionType {
   RETURN = 'return',
   THROW = 'throw',
 }
+
 export class CompletionRecord<T> {
   constructor(init: CompletionRecord<T>) {
     const { Type, Value, Target } = init;
@@ -34,29 +37,43 @@ export interface NormalCompletionRecord<T> extends CompletionRecord<T> {
 }
 export function NormalCompletion<T>(value: T): NormalCompletionRecord<T> {
   // 1. Return Completion { [[Type]]: normal, [[Value]]: argument, [[Target]]: empty }.
-  return new CompletionRecord<T>({ Type: CompletionType.NORMAL, Value: value, Target: undefined }) as NormalCompletionRecord<T>;
+  return new CompletionRecord<T>({
+    Type: CompletionType.NORMAL,
+    Value: value,
+    Target: undefined,
+  }) as NormalCompletionRecord<T>;
 }
 
-export interface ThrowCompletionRecord<T> extends CompletionRecord<T> {
+/** https://tc39.es/ecma262/#sec-throwcompletion */
+export interface ThrowCompletionRecord<T extends Value = any> extends CompletionRecord<T> {
   readonly Type: CompletionType.THROW;
   readonly Target: undefined;
 }
-/** https://tc39.es/ecma262/#sec-throwcompletion */
-export function ThrowCompletion<T>(argument: T): ThrowCompletionRecord<T> {
+export function ThrowCompletion<T extends Value>(argument: T): ThrowCompletionRecord<T> {
   // 1. Return Completion { [[Type]]: throw, [[Value]]: argument, [[Target]]: empty }.
-  return new CompletionRecord<T>({ Type: CompletionType.THROW, Value: argument, Target: undefined }) as ThrowCompletionRecord<T>;
+  return new CompletionRecord<T>({
+    Type: CompletionType.THROW,
+    Value: argument,
+    Target: undefined,
+  }) as ThrowCompletionRecord<T>;
 }
 
 /** https://tc39.es/ecma262/#sec-updateempty */
-export function UpdateEmpty<T, Q>(completionRecord: CompletionRecord<Q>, value: T): CompletionRecord<T | Q> {
+export function UpdateEmpty<T, Q>(completionRecord: CompletionRecord<T>, value: Q): CompletionRecord<T | Q> {
   Assert(completionRecord instanceof CompletionRecord);
   // 1. Assert: If completionRecord.[[Type]] is either return or throw, then completionRecord.[[Value]] is not empty.
-  Assert(!(completionRecord.Type === CompletionType.RETURN || completionRecord.Type === CompletionType.THROW) || completionRecord.Value !== undefined);
-  // FIXME: "?" means abrupt completion
+  Assert(
+    !(completionRecord.Type === CompletionType.RETURN || completionRecord.Type === CompletionType.THROW) ||
+      completionRecord.Value !== undefined
+  );
   // 2. If completionRecord.[[Value]] is not empty, return ? completionRecord.
   if (completionRecord.Value !== undefined) {
-    return new CompletionRecord(completionRecord);
+    return Q(completionRecord);
   }
   // 3. Return Completion { [[Type]]: completionRecord.[[Type]], [[Value]]: value, [[Target]]: completionRecord.[[Target]] }.
-  return new CompletionRecord({ Type: completionRecord.Type, Value: value, Target: completionRecord.Target });
+  return new CompletionRecord({
+    Type: completionRecord.Type,
+    Value: value,
+    Target: completionRecord.Target,
+  });
 }
