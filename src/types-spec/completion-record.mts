@@ -17,7 +17,7 @@ export enum CompletionType {
   THROW = 'throw',
 }
 
-export class CompletionRecord<T> {
+export class CompletionRecord<T = unknown> {
   constructor(init: CompletionRecord<T>) {
     const { Type, Value, Target } = init;
     this.Type = Type;
