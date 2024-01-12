@@ -1,14 +1,16 @@
 import { Assert } from './index.mjs';
-import { CompletionRecord, CompletionType, NormalCompletion } from '../types-spec/completion-record.mjs';
+import { CompletionRecord, NormalCompletion } from '../types-spec/completion-record.mjs';
+import { CompletionType } from '../types-spec/completion-record.constant.mjs';
+import type { ICompletion } from '../types-spec/completion-record.type.mjs';
 
 /** https://tc39.es/ecma262/multipage/notational-conventions.html#sec-completion-ao */
-export function Completion<T extends CompletionRecord>(argument: T): T {
+export function Completion<T = unknown>(argument: ICompletion<T>) {
   Assert(argument instanceof CompletionRecord);
   return argument;
 }
 
 /** https://tc39.es/ecma262/multipage/notational-conventions.html#sec-returnifabrupt */
-export function ReturnIfAbrupt<T extends CompletionRecord>(argument: T) {
+export function ReturnIfAbrupt<T = unknown>(argument: ICompletion<T>) {
   // 1. Assert: argument is a Completion Record.
   Assert(argument instanceof CompletionRecord);
   // 2. If argument is an abrupt completion, return Completion(argument).

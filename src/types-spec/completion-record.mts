@@ -4,21 +4,14 @@
  * @date 2023-06-27
  */
 
-import { Assert } from '../notational-conventions.mjs';
+import { Assert } from '../notational-conventions/index.mjs';
 import { Q } from '../notational-conventions/runtime-semantics.mjs';
+import { CompletionType } from './completion-record.constant.mjs';
 import type { ECMALanguageValues } from '../types-language/type';
+import type { ICompletion, INormalCompletion, IThrowCompletion } from './completion-record.type.mjs';
 
-/** https://tc39.es/ecma262/#sec-completion-record-specification-type */
-export enum CompletionType {
-  NORMAL = 'normal',
-  BREAK = 'break',
-  CONTINUE = 'continue',
-  RETURN = 'return',
-  THROW = 'throw',
-}
-
-export class CompletionRecord<T = unknown> {
-  constructor(init: CompletionRecord<T>) {
+export class CompletionRecord<T = unknown> implements ICompletion<T> {
+  constructor(init: ICompletion<T>) {
     const { Type, Value, Target } = init;
     this.Type = Type;
     this.Value = Value;
@@ -31,35 +24,27 @@ export class CompletionRecord<T = unknown> {
 }
 
 /** https://tc39.es/ecma262/#sec-normalcompletion */
-export interface NormalCompletionRecord<T> extends CompletionRecord<T> {
-  readonly Type: CompletionType.NORMAL;
-  readonly Target: undefined;
-}
-export function NormalCompletion<T>(value: T): NormalCompletionRecord<T> {
+export function NormalCompletion<T>(value: T): INormalCompletion<T> {
   // 1. Return Completion { [[Type]]: normal, [[Value]]: argument, [[Target]]: empty }.
   return new CompletionRecord<T>({
     Type: CompletionType.NORMAL,
     Value: value,
     Target: undefined,
-  }) as NormalCompletionRecord<T>;
+  }) as INormalCompletion<T>;
 }
 
 /** https://tc39.es/ecma262/#sec-throwcompletion */
-export interface ThrowCompletionRecord<T extends ECMALanguageValues = any> extends CompletionRecord<T> {
-  readonly Type: CompletionType.THROW;
-  readonly Target: undefined;
-}
-export function ThrowCompletion<T extends ECMALanguageValues>(argument: T): ThrowCompletionRecord<T> {
+export function ThrowCompletion<T extends ECMALanguageValues>(argument: T): IThrowCompletion<T> {
   // 1. Return Completion { [[Type]]: throw, [[Value]]: argument, [[Target]]: empty }.
   return new CompletionRecord<T>({
     Type: CompletionType.THROW,
     Value: argument,
     Target: undefined,
-  }) as ThrowCompletionRecord<T>;
+  }) as IThrowCompletion<T>;
 }
 
 /** https://tc39.es/ecma262/#sec-updateempty */
-export function UpdateEmpty<T, Q>(completionRecord: CompletionRecord<T>, value: Q): CompletionRecord<T | Q> {
+export function UpdateEmpty<T, Q>(completionRecord: ICompletion<T>, value: Q): ICompletion<T | Q> {
   Assert(completionRecord instanceof CompletionRecord);
   // 1. Assert: If completionRecord.[[Type]] is either return or throw, then completionRecord.[[Value]] is not empty.
   Assert(
