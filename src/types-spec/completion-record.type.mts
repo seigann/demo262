@@ -1,3 +1,4 @@
+import type { tECMALanguageTypes } from '../types-language/value.type.mjs';
 import type { CompletionType } from './completion-record.constant.mjs';
 
 export interface ICompletion<T> {
@@ -11,7 +12,7 @@ export interface INormalCompletion<T> extends ICompletion<T> {
   readonly Target: undefined;
 }
 
-export interface IThrowCompletion<T extends ECMALanguageValues = unknown> extends ICompletion<T> {
+export interface IThrowCompletion<T extends tECMALanguageTypes = unknown> extends ICompletion<T> {
   readonly Type: CompletionType.THROW;
   readonly Target: undefined;
 }

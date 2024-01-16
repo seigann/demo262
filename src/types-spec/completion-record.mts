@@ -7,7 +7,7 @@
 import { Assert } from '../notational-conventions/index.mjs';
 import { Q } from '../notational-conventions/runtime-semantics.mjs';
 import { CompletionType } from './completion-record.constant.mjs';
-import type { ECMALanguageValues } from '../types-language/type';
+import type { tECMALanguageTypes } from '../types-language/value.type.mjs';
 import type { ICompletion, INormalCompletion, IThrowCompletion } from './completion-record.type.mjs';
 
 export class CompletionRecord<T = unknown> implements ICompletion<T> {
@@ -34,7 +34,7 @@ export function NormalCompletion<T>(value: T): INormalCompletion<T> {
 }
 
 /** https://tc39.es/ecma262/#sec-throwcompletion */
-export function ThrowCompletion<T extends ECMALanguageValues>(argument: T): IThrowCompletion<T> {
+export function ThrowCompletion<T extends tECMALanguageTypes>(argument: T): IThrowCompletion<T> {
   // 1. Return Completion { [[Type]]: throw, [[Value]]: argument, [[Target]]: empty }.
   return new CompletionRecord<T>({
     Type: CompletionType.THROW,

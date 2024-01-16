@@ -25,3 +25,10 @@ export function ReturnIfAbrupt<T = unknown>(argument: ICompletion<T>) {
 
 /** https://tc39.es/ecma262/multipage/notational-conventions.html#sec-returnifabrupt-shorthands */
 export const Q = ReturnIfAbrupt;
+
+/** https://tc39.es/ecma262/multipage/notational-conventions.html#sec-returnifabrupt-shorthands */
+export function X<T = unknown>(argument: ICompletion<T>) {
+  Assert(argument instanceof NormalCompletion);
+  // TODO
+  return NormalCompletion(argument.Value);
+}
